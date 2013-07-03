@@ -1,0 +1,30 @@
+{
+  "replacing": {
+  },
+  "conflicting": {
+  },
+  "suggestions": {
+  },
+  "recommendations": {
+  },
+  "maintainer": "Gupta Media, LLC",
+  "name": "render",
+  "long_description": "render\n\n",
+  "recipes": {
+    "render::default": "Sets up the Render machine"
+  },
+  "description": "smartURL Render",
+  "groupings": {
+  },
+  "attributes": {
+  },
+  "dependencies": {
+  },
+  "license": "Copyright Gupta Media LLC. All rights reserved.",
+  "providing": {
+  },
+  "version": "1.0.0",
+  "maintainer_email": "tech@guptamedia..com",
+  "platforms": {
+  }
+}

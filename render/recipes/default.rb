@@ -19,6 +19,7 @@ end
 
 directory "/home/webapps/smarturl-render" do
 	action :create
+	recursive true
 end
 
 # configure apache default site

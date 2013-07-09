@@ -1,0 +1,54 @@
+<VirtualHost *:80>
+        ServerAdmin webmaster@localhost
+        DocumentRoot /home/ubuntu/smarturl-render/web
+#        DocumentRoot /home/ubuntu/smarturl-render-2242/web
+        ServerName smarturl.it
+        ServerAlias www.smarturl.it render.smarturl.it render-beta.smarturl.it smarturlit.com www.smarturlit.com render-1.smarturl.it render-3.smarturl.it
+
+        <Directory />
+          AllowOverride None
+        </Directory>
+
+        ErrorLog ${APACHE_LOG_DIR}/error.log
+
+        # Possible values include: debug, info, notice, warn, error, crit,
+        # alert, emerg.
+        LogLevel warn
+
+        # we need to log the x-forwarded-for header, because this can sit behind a load balancer
+        LogFormat "%h %l %u %t \"%r\" %>s %O \"%{Referer}i\" \"%{User-Agent}i\" %T/%D" combined_t
+        LogFormat "%{X-Forwarded-For}i %l %u %t \"%r\" %>s %O \"%{Referer}i\" \"%{User-Agent}i\" %T/%D" combined_proxy_t
+        SetEnvIfNoCase X-Forwarded-For "." from_proxy=1
+        CustomLog "|/usr/bin/cronolog --hardlink=/var/log/apache2/access.log --time-zone=UTC /var/log/apache2/%Y/%m/%d/%Y-%m-%d-%H-access.log" combined_t env=!from_proxy
+        CustomLog "|/usr/bin/cronolog --hardlink=/var/log/apache2/access.log --time-zone=UTC /var/log/apache2/%Y/%m/%d/%Y-%m-%d-%H-access.log" combined_proxy_t env=from_proxy
+#        CustomLog ${APACHE_LOG_DIR}/access.log combined_t
+
+        # either a runaway script or a DOS attack 
+        RewriteCond %{HTTP_USER_AGENT} ^apache-httpclient/unavailable.*$ [NC]
+        RewriteRule ^(.*)$ - [F,L]
+
+        # send homepage requests to the manage server
+        RewriteEngine on
+        RewriteRule ^(/?)$ http://manage.smarturl.it/ [R=301,L,QSA]
+        RewriteRule ^/?index\.(html?|php) http://manage.smarturl.it/index.html [R=301,L,QSA]
+	RewriteRule ^/?([^/]+)\+$ http://manage.smarturl.it/summary/$1 [R,L,QSA]
+        RewriteRule ^/?([^/]+)\*$ /$1?__su_debug=1 [PT]
+
+        ProxyRequests Off
+
+        ProxyPass /favicon.ico !
+        ProxyPass /_static !
+        ProxyPass /robots.txt !
+        ProxyPass /apple-touch-icon.png !
+        ProxyPass /googlef682d33fe2710944.html !
+
+        <Proxy *>
+        Order deny,allow
+        Allow from all
+        </Proxy>
+
+        ProxyPass / http://127.0.0.1:2243/
+#        ProxyPass / http://127.0.0.1:2242/
+        ProxyPreserveHost On
+
+</VirtualHost>
